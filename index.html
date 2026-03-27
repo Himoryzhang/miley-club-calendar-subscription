@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Miley's English Club 订阅日历生成器</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <h1 class="hero__title">
+          <span class="hero__line">Miley's English Club</span>
+          <span class="hero__line hero__line--accent">订阅日历生成器</span>
+        </h1>
+        <p class="hero__copy">
+          粘贴微信约课页面链接，生成可添加到 Google 日历或 Mac 日历的订阅链接，后续课程会自动同步更新。
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="panel panel--wide">
+          <div class="panel__head">
+            <h2>1. 读取课程</h2>
+            <p>先粘贴微信约课页面链接，再读取当前到未来已报名的课程。</p>
+          </div>
+
+          <label class="field">
+            <span class="field__label">
+              约课页面链接
+              <span
+                class="field__help"
+                tabindex="0"
+                role="note"
+                title="从微信约课页面复制完整链接，用来读取你的课程。"
+                data-tooltip="从微信约课页面复制完整链接，用来读取你的课程。"
+                aria-label="约课页面链接说明：从微信约课页面复制完整链接，用来读取你的课程。"
+              >
+                ?
+              </span>
+            </span>
+            <input
+              id="source-url"
+              type="url"
+              placeholder="请粘贴微信约课页面链接"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field__label">
+              日历名称
+              <span
+                class="field__help"
+                tabindex="0"
+                role="note"
+                title="这是添加到日历后显示的名称，你可以按自己的习惯修改。"
+                data-tooltip="这是添加到日历后显示的名称，你可以按自己的习惯修改。"
+                aria-label="日历名称说明：这是添加到日历后显示的名称，你可以按自己的习惯修改。"
+              >
+                ?
+              </span>
+            </span>
+            <input id="calendar-name" type="text" placeholder="添加到日历后显示的名称" />
+          </label>
+
+          <div class="button-row">
+            <div class="split-button" id="fetch-menu">
+              <button id="direct-fetch" type="button">抓取课程数据</button>
+              <button
+                id="fetch-menu-trigger"
+                class="split-button__toggle"
+                type="button"
+                aria-label="更多选项"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="fetch-menu-panel"
+              ></button>
+              <div class="split-button__menu" id="fetch-menu-panel" role="menu" hidden>
+                <button id="parse-url" type="button" role="menuitem">检查链接</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-banner" id="request-status-banner" hidden></div>
+        </section>
+
+        <section class="panel panel--wide">
+          <div class="panel__head">
+            <div>
+              <h2>2. 确认课程</h2>
+              <p id="course-panel-hint">读取课程后会自动生成。</p>
+            </div>
+          </div>
+
+          <div class="courses-layout" id="courses-layout">
+            <div class="stats" id="course-stats"></div>
+            <div class="course-list is-empty" id="course-list"></div>
+          </div>
+        </section>
+
+        <section class="panel panel--wide">
+          <div class="panel__head">
+            <h2>3. 添加到日历</h2>
+          </div>
+
+          <label class="field">
+            <span class="field__label">
+              日历链接
+              <span
+                class="field__help"
+                tabindex="0"
+                role="note"
+                title="读取课程后会自动生成，可通过右侧图标或下方按钮复制，用于 Google、iPhone 或 Mac 日历。"
+                data-tooltip="读取课程后会自动生成，可通过右侧图标或下方按钮复制，用于 Google、iPhone 或 Mac 日历。"
+                aria-label="日历链接说明：读取课程后会自动生成，可通过右侧图标或下方按钮复制，用于 Google、iPhone 或 Mac 日历。"
+              >
+                ?
+              </span>
+            </span>
+            <div class="copy-field">
+              <input
+                id="subscription-url"
+                type="text"
+                readonly
+                placeholder="读取课程后会自动生成"
+                aria-label="日历链接输入框"
+              />
+              <button
+                id="copy-subscription-icon"
+                class="copy-field__icon"
+                type="button"
+                aria-label="复制日历链接"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M8 8.75A2.75 2.75 0 0 1 10.75 6h7.5A2.75 2.75 0 0 1 21 8.75v7.5A2.75 2.75 0 0 1 18.25 19h-7.5A2.75 2.75 0 0 1 8 16.25z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  />
+                  <path
+                    d="M5.75 15.5A2.75 2.75 0 0 1 3 12.75v-7.5A2.75 2.75 0 0 1 5.75 2.5h7.5A2.75 2.75 0 0 1 16 5.25"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </label>
+
+          <p class="panel__summary" id="subscription-note"></p>
+          <div class="button-row">
+            <button id="copy-subscription" type="button">复制链接</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="./dist/main.js"></script>
+  </body>
+</html>

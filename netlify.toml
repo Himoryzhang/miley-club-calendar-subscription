@@ -1,0 +1,22 @@
+[build]
+  command = "pnpm build"
+  publish = "."
+
+[functions]
+  directory = "netlify/functions"
+  included_files = ["dist/**", "server/**"]
+
+[[redirects]]
+  from = "/api/create-subscription"
+  to = "/.netlify/functions/create-subscription"
+  status = 200
+
+[[redirects]]
+  from = "/api/get-course"
+  to = "/.netlify/functions/api-get-course"
+  status = 200
+
+[[redirects]]
+  from = "/calendar.ics"
+  to = "/.netlify/functions/calendar-ics"
+  status = 200
