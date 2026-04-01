@@ -8,6 +8,8 @@ import type {
 
 const ZERO_GUID = "00000000-0000-0000-0000-000000000000";
 const DEFAULT_TIMEZONE_OFFSET = "+08:00";
+const UPSTREAM_API_PATH = "/Ashx/WeiXin.ashx";
+const COURSE_ACTION = "GetCourse";
 
 const ARRAY_KEYS = [
   "data",
@@ -79,6 +81,7 @@ export function createDefaultStartDay(): string {
 
 export function extractRequestContext(sourceUrl: string, startDay = createDefaultStartDay()): CourseRequestContext {
   const url = new URL(sourceUrl.trim());
+  url.protocol = "https:";
   const openId =
     pickQueryValue(url, ["openID", "openid", "oid"]) ?? "";
   const lic =
@@ -92,9 +95,12 @@ export function extractRequestContext(sourceUrl: string, startDay = createDefaul
     throw new Error("这个链接不完整，请重新从微信约课页面复制完整链接。");
   }
 
+  const apiUrl = new URL(`${UPSTREAM_API_PATH}?action=${COURSE_ACTION}`, url);
+  apiUrl.protocol = "https:";
+
   return {
     sourceUrl: url.toString(),
-    apiUrl: new URL("/Ashx/WeiXin.ashx?action=GetCourse", url).toString(),
+    apiUrl: apiUrl.toString(),
     openId,
     lic,
     memberGuid,

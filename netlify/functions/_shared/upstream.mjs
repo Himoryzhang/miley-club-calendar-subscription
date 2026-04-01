@@ -182,7 +182,7 @@ async function fetchShowCourseDays(requestLike) {
 async function fetchUpstreamActionResponse(requestLike, action) {
   const upstreamUrl = validateUpstreamUrl(requestLike.apiUrl, action);
   const formData = buildUpstreamFormData(requestLike, action);
-  const referer = requestLike.sourceUrl || `https://${ALLOWED_UPSTREAM_HOST}/WeiXin/selfLesson.aspx`;
+  const referer = resolveUpstreamReferer(requestLike.sourceUrl);
   const upstreamResponse = await fetch(upstreamUrl, {
     method: "POST",
     headers: {
@@ -207,7 +207,7 @@ function validateUpstreamUrl(value, action = COURSE_ACTION) {
     throw new Error("Missing apiUrl.");
   }
 
-  const url = new URL(value);
+  const url = normalizeUpstreamUrl(value);
 
   if (url.protocol !== "https:") {
     throw new Error("Upstream apiUrl must use https.");
@@ -253,9 +253,39 @@ function buildUpstreamFormData(body, action = COURSE_ACTION) {
 }
 
 function withAction(apiUrl, action) {
-  const url = new URL(ensureString(apiUrl, "apiUrl"));
+  const url = normalizeUpstreamUrl(apiUrl);
   url.searchParams.set("action", action);
   return url.toString();
+}
+
+function normalizeUpstreamUrl(value) {
+  const url = new URL(ensureString(value, "apiUrl"));
+
+  if (url.hostname === ALLOWED_UPSTREAM_HOST && url.protocol !== "https:") {
+    url.protocol = "https:";
+  }
+
+  return url;
+}
+
+function resolveUpstreamReferer(value) {
+  const fallback = `https://${ALLOWED_UPSTREAM_HOST}/WeiXin/selfLesson.aspx`;
+
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return fallback;
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (url.hostname === ALLOWED_UPSTREAM_HOST && url.protocol !== "https:") {
+      url.protocol = "https:";
+    }
+
+    return url.toString();
+  } catch {
+    return fallback;
+  }
 }
 
 function extractShowCourseDays(payload) {
