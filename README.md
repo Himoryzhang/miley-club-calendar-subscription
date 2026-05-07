@@ -13,12 +13,12 @@
 
 ## 上游页面与接口
 
-- 约课页: [https://vip4.zj.etmcn.com/WeiXin/selfLesson.aspx](https://vip4.zj.etmcn.com/WeiXin/selfLesson.aspx)
-- 课程接口: [https://vip4.zj.etmcn.com/Ashx/WeiXin.ashx?action=GetCourse](https://vip4.zj.etmcn.com/Ashx/WeiXin.ashx?action=GetCourse)
+- 约课页: [https://vip4.etmcn.com/WeiXin/selfLesson.aspx](https://vip4.etmcn.com/WeiXin/selfLesson.aspx)
+- 课程接口: [https://vip4.etmcn.com/Ashx/WeiXin.ashx?action=GetCourse](https://vip4.etmcn.com/Ashx/WeiXin.ashx?action=GetCourse)
 
 ## 为什么不能前端直连接口
 
-上游站点没有返回 `Access-Control-Allow-Origin`，所以浏览器从 `http://127.0.0.1:4173` 直接请求 `vip4.zj.etmcn.com` 会被 CORS 拦截。
+上游站点没有返回 `Access-Control-Allow-Origin`，所以浏览器从 `http://127.0.0.1:4173` 直接请求 `vip4.etmcn.com` 会被 CORS 拦截。
 
 当前项目的解决方式是同源代理：
 
@@ -69,7 +69,7 @@ http://127.0.0.1:4173
 用户只需要提供微信约课页完整链接，例如：
 
 ```text
-https://vip4.zj.etmcn.com/WeiXin/selfLesson.aspx?oid=...&openid=...&lic=...&licence=...&MemberGuid=...&MPUserGuid=...&appid=...&mobile=#
+https://vip4.etmcn.com/WeiXin/selfLesson.aspx?oid=...&openid=...&lic=...&licence=...&MemberGuid=...&MPUserGuid=...&appid=...&mobile=#
 ```
 
 前端会从 URL 中提取：

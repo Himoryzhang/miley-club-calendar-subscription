@@ -16,7 +16,7 @@ flowchart TD
     S --> D["返回 showCourseDays"]
     D --> G
     G --> C["按日期循环请求<br/>GetCourse(startDay)"]
-    C --> W["微信课程系统<br/>vip4.zj.etmcn.com"]
+    C --> W["微信课程系统<br/>vip4.etmcn.com"]
     W --> G
     G --> M["合并多天响应<br/>mergeCoursePayloads"]
     M --> P
@@ -71,7 +71,7 @@ flowchart LR
     end
 
     subgraph External["外部系统"]
-        Wechat["微信课程上游接口<br/>vip4.zj.etmcn.com"]
+        Wechat["微信课程上游接口<br/>vip4.etmcn.com"]
     end
 
     Browser --> UI

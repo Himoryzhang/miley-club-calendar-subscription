@@ -51,7 +51,7 @@
 
 函数会：
 
-1. 校验上游地址只能是 `vip4.zj.etmcn.com/Ashx/WeiXin.ashx?action=GetCourse`
+1. 校验上游地址只能是 `vip4.etmcn.com/Ashx/WeiXin.ashx?action=GetCourse`
 2. 组装表单参数
 3. 请求微信课程接口
 4. 把结果原样返回给前端
@@ -263,7 +263,7 @@ Google 官方帮助说明：
 
 这是最现实的联调风险。
 
-就算本地 `pnpm preview` 正常，也不代表 Netlify 机房请求 `vip4.zj.etmcn.com` 一定成功。
+就算本地 `pnpm preview` 正常，也不代表 Netlify 机房请求 `vip4.etmcn.com` 一定成功。
 
 如果部署后页面抓课失败，优先检查：
 

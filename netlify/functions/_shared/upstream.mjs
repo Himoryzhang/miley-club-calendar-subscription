@@ -1,4 +1,5 @@
-const ALLOWED_UPSTREAM_HOST = "vip4.zj.etmcn.com";
+const PRIMARY_UPSTREAM_HOST = "vip4.etmcn.com";
+const ALLOWED_UPSTREAM_HOSTS = new Set([PRIMARY_UPSTREAM_HOST, "vip4.zj.etmcn.com"]);
 const ALLOWED_UPSTREAM_PATH = "/Ashx/WeiXin.ashx";
 const COURSE_ACTION = "GetCourse";
 const COURSE_SETTING_ACTION = "GetCourseSetting";
@@ -182,14 +183,14 @@ async function fetchShowCourseDays(requestLike) {
 async function fetchUpstreamActionResponse(requestLike, action) {
   const upstreamUrl = validateUpstreamUrl(requestLike.apiUrl, action);
   const formData = buildUpstreamFormData(requestLike, action);
-  const referer = resolveUpstreamReferer(requestLike.sourceUrl);
+  const referer = resolveUpstreamReferer(requestLike.sourceUrl, upstreamUrl);
   const upstreamResponse = await fetch(upstreamUrl, {
     method: "POST",
     headers: {
       "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
       accept: "*/*",
       "accept-language": "zh-CN,zh;q=0.9",
-      origin: `https://${ALLOWED_UPSTREAM_HOST}`,
+      origin: upstreamUrl.origin,
       referer,
       "x-requested-with": "XMLHttpRequest"
     },
@@ -213,8 +214,8 @@ function validateUpstreamUrl(value, action = COURSE_ACTION) {
     throw new Error("Upstream apiUrl must use https.");
   }
 
-  if (url.hostname !== ALLOWED_UPSTREAM_HOST) {
-    throw new Error(`Upstream host must be ${ALLOWED_UPSTREAM_HOST}.`);
+  if (!ALLOWED_UPSTREAM_HOSTS.has(url.hostname)) {
+    throw new Error(`Upstream host must be one of ${Array.from(ALLOWED_UPSTREAM_HOSTS).join(", ")}.`);
   }
 
   if (url.pathname !== ALLOWED_UPSTREAM_PATH) {
@@ -225,7 +226,7 @@ function validateUpstreamUrl(value, action = COURSE_ACTION) {
     throw new Error(`Upstream action must be ${action}.`);
   }
 
-  return url.toString();
+  return url;
 }
 
 function buildUpstreamFormData(body, action = COURSE_ACTION) {
@@ -259,32 +260,34 @@ function withAction(apiUrl, action) {
 }
 
 function normalizeUpstreamUrl(value) {
-  const url = new URL(ensureString(value, "apiUrl"));
+  const url = value instanceof URL ? new URL(value.toString()) : new URL(ensureString(value, "apiUrl"));
 
-  if (url.hostname === ALLOWED_UPSTREAM_HOST && url.protocol !== "https:") {
+  if (ALLOWED_UPSTREAM_HOSTS.has(url.hostname)) {
     url.protocol = "https:";
+    url.hostname = PRIMARY_UPSTREAM_HOST;
   }
 
   return url;
 }
 
-function resolveUpstreamReferer(value) {
-  const fallback = `https://${ALLOWED_UPSTREAM_HOST}/WeiXin/selfLesson.aspx`;
+function resolveUpstreamReferer(value, upstreamUrl) {
+  const fallback = new URL("/WeiXin/selfLesson.aspx", upstreamUrl);
 
   if (typeof value !== "string" || value.trim().length === 0) {
-    return fallback;
+    return fallback.toString();
   }
 
   try {
     const url = new URL(value);
 
-    if (url.hostname === ALLOWED_UPSTREAM_HOST && url.protocol !== "https:") {
-      url.protocol = "https:";
+    if (ALLOWED_UPSTREAM_HOSTS.has(url.hostname)) {
+      url.protocol = upstreamUrl.protocol;
+      url.hostname = upstreamUrl.hostname;
     }
 
     return url.toString();
   } catch {
-    return fallback;
+    return fallback.toString();
   }
 }
 

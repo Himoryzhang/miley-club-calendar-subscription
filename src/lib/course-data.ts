@@ -8,6 +8,8 @@ import type {
 
 const ZERO_GUID = "00000000-0000-0000-0000-000000000000";
 const DEFAULT_TIMEZONE_OFFSET = "+08:00";
+const PRIMARY_UPSTREAM_HOST = "vip4.etmcn.com";
+const SUPPORTED_UPSTREAM_HOSTS = new Set([PRIMARY_UPSTREAM_HOST, "vip4.zj.etmcn.com"]);
 const UPSTREAM_API_PATH = "/Ashx/WeiXin.ashx";
 const COURSE_ACTION = "GetCourse";
 
@@ -82,6 +84,11 @@ export function createDefaultStartDay(): string {
 export function extractRequestContext(sourceUrl: string, startDay = createDefaultStartDay()): CourseRequestContext {
   const url = new URL(sourceUrl.trim());
   url.protocol = "https:";
+
+  if (SUPPORTED_UPSTREAM_HOSTS.has(url.hostname)) {
+    url.hostname = PRIMARY_UPSTREAM_HOST;
+  }
+
   const openId =
     pickQueryValue(url, ["openID", "openid", "oid"]) ?? "";
   const lic =
