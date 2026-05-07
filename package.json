@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "netlify-cli": "^26.0.1",
     "typescript": "^5.7.3"
   }
 }
